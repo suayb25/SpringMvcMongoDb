@@ -8,45 +8,23 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-    <script>
-        function myFunc() {
-
-            var name = document.forms["AddForm"]["name"];
-            var surname = document.forms["AddForm"]["surname"];
-            var phone = document.forms["AddForm"]["phoneNumber"];
-            var username =  document.forms["AddForm"]["username"];
-
-            if (name.length <2)
-            {
-                window.alert("Name must not be less than two characters");
-                name.focus();
-                return false;
-            }
-
-            if (surname.length <2)
-            {
-                window.alert("Surname must not be less than two characters");
-                name.focus();
-                return false;
-            }
-
-            if (phone.length <2)
-            {
-                window.alert("Phone must not be less than two characters");
-                email.focus();
-                return false;
-            }
-
-            if (username.length <2)
-            {
-                window.alert("Username must not be less than two characters");
-                email.focus();
-                return false;
-            }
-            return true;
-
+<script>
+    function validateForm() {
+        var recaptcha = document.forms["AddForm"]["g-recaptcha-response"].value;
+        if (recaptcha == "") {
+            alert("Please fill reCAPTCHA");
+            return false;
         }
-    </script>
+    }
+    function validateForm1() {
+        var recaptcha = document.forms["EditForm"]["g-recaptcha-response"].value;
+        if (recaptcha == "") {
+            alert("Please fill reCAPTCHA");
+            return false;
+        }
+    }
+
+</script>
 
 </head>
 <body background="user.jpg">
@@ -105,26 +83,26 @@
                                     </div>
                                     <div class="modal-body">
                                         <p th:text="'Are you sure want to edit ' + ${user.name} + ' ?'"></p>
-                                        <form role="form" action="#" th:action="@{/save}" th:object="${user}" method="post">
+                                        <form role="form" name="EditForm" action="#" th:action="@{/save}" th:object="${user}" onsubmit="return validateForm1()" method="post">
                                             <div class="form-group">
                                                 <label for="inputUserNameEdit">UserId</label>
-                                                <input type="text" class="form-control" id="inputUserIdEdit" th:field="*{userId}" minlength="2" required/>
+                                                <input type="text" class="form-control" id="inputUserIdEdit" th:field="*{userId}" th:placeholder="${user.userId}" minlength="2" required/>
                                             </div>
                                             <div class="form-group">
                                                 <label for="inputUserNameEdit">Username</label>
-                                                <input type="text" class="form-control" id="inputUserNameEdit" th:field="*{userName}" minlength="2" required />
+                                                <input type="text" class="form-control" id="inputUserNameEdit" th:field="*{userName}" th:placeholder="${user.userName}" minlength="2" required />
                                             </div>
                                             <div class="form-group">
                                                 <label for="inputName">Name</label>
-                                                <input type="text" class="form-control" id="inputName" th:field="*{name}" minlength="2" required/>
+                                                <input type="text" class="form-control" id="inputName" th:field="*{name}" th:placeholder="${user.name}" minlength="2" required/>
                                             </div>
                                             <div class="form-group">
                                                 <label for="inputEmail">Surname</label>
-                                                <input type="text" class="form-control" id="inputEmail" th:field="*{surname}" minlength="2" required/>
+                                                <input type="text" class="form-control" id="inputEmail" th:field="*{surname}" th:placeholder="${user.surname}" minlength="2" required/>
                                             </div>
                                             <div class="form-group">
                                                 <label for="inputMessage">PhoneNumber</label>
-                                                <input type="number" class="form-control" id="inputMessage" th:field="*{phoneNumber}" minlength="2"required/>
+                                                <input type="number" class="form-control" id="inputMessage" th:field="*{phoneNumber}" th:placeholder="${user.phoneNumber}" minlength="2"required/>
                                             </div>
                                             <div class="form-group">
                                                 <div class="g-recaptcha" data-sitekey="6LdyJq4UAAAAAEGnoVdkK5KJgq5mu2mo9e7c2rbh"></div>
@@ -165,7 +143,7 @@
                     </div>
                     <div class="modal-body">
                         <p>Add New User</p>
-                        <form role="form"  name="AddForm" action="#" th:action="@{/save}" th:object="${user}"  method="post" >
+                        <form role="form"  name="AddForm" action="#" th:action="@{/save}" th:object="${user}" onsubmit="return validateForm()" method="post" >
 
                             <div class="form-group">
                                 <label for="inputUsername">Username</label>
@@ -185,7 +163,8 @@
                                 <input type="number" class="form-control" id="inputMessage1" name="phoneNumber"th:field="*{phoneNumber}" placeholder="Enter a phone number" minlength="8" required/>
                             </div>
                             <div class="form-group">
-                                <div class="g-recaptcha" data-sitekey="6LdyJq4UAAAAAEGnoVdkK5KJgq5mu2mo9e7c2rbh"></div>
+                                <div class="g-recaptcha" data-sitekey="6LdyJq4UAAAAAEGnoVdkK5KJgq5mu2mo9e7c2rbh">
+                                </div>
                             </div>
                             <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

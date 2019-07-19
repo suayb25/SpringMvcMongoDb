@@ -14,11 +14,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.*;
 
 import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringRunner.class)
 @DataMongoTest
@@ -26,6 +27,8 @@ public class TestMongo {
 
     protected MockMvc mvc;
 
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Autowired
     private UserRepository userRepository;
@@ -41,10 +44,17 @@ public class TestMongo {
         }
     }
     @Test
-    public void test_Delete() throws Exception {
+    public void test_Delete() {
+
+        /*String uri = "/Delete/5d2ef6e89d51691644281cc4";
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.delete(uri)).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(200, status);
+        String content = mvcResult.getResponse().getContentAsString();
+        assertEquals(content, "Product is deleted successsfully");*/
 
         User user1=new User();
-        user1.setUserId("5d2edb749198b11710713b81");
+        user1.setUserId("5d317aa39d516912fc005f96");
         List<User> userList =userRepository.findAll();
         for(User user:userList){
             if(user.getUserId().equals(user1.getUserId())){
@@ -57,9 +67,28 @@ public class TestMongo {
             }
         }
         userRepository.deleteById(user1.getUserId());
+        assertNull(userRepository.findUserByUserName(user1.getUserId()));
         System.out.println("Deleted Successfully UserId= "+ user1.getUserId());
     }
 
+    @Test
+    public void test_Edit(){
 
+        User user1= userRepository.findUserByUserName("Selami35");
+        String old_phone=user1.getPhoneNumber();
+        System.out.println("Before Edit PhoneNumber: "+ user1.getPhoneNumber());
+        user1.setPhoneNumber("5398225566");
 
+        userRepository.save(user1);
+
+         user1= userRepository.findUserByUserName("Selami35");
+        assertThat(user1.getPhoneNumber()).doesNotMatch(old_phone);
+        System.out.println("After Edit PhoneNumber: " + user1.getPhoneNumber());
+    }
+
+    @Test
+    public void isNotNullUser() {
+        User user1= userRepository.findUserByUserName("Selami35");
+        assertThat(user1.getName()).isNotNull();
+    }
 }
