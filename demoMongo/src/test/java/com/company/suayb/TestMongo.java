@@ -2,21 +2,21 @@ package com.company.suayb;
 
 import com.company.suayb.model.User;
 import com.company.suayb.repository.UserRepository;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
+import static net.bytebuddy.matcher.ElementMatchers.is;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
+import org.springframework.web.client.RestTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.*;
 
 import java.util.List;
@@ -35,60 +35,74 @@ public class TestMongo {
 
     @Test
     public void test_AllUser(){
-        List<User> userList =userRepository.findAll();
-        for(User user:userList){
-            System.out.println("UserId: "+ user.getUserId());
-        System.out.println("UserName: "+ user.getUserName());
-            System.out.println("Name: "+user.getName());
-            System.out.println("Surname: "+ user.getSurname());
+        if(userRepository.findAll()!=null){
+            List<User> userList =userRepository.findAll();
+              int i=0;
+            for(User user:userList){
+                System.out.println("UserId: "+ user.getUserId());
+                System.out.println("UserName: "+ user.getUserName());
+                System.out.println("Name: "+user.getName());
+                System.out.println("Surname: "+ user.getSurname());
+
+                assertEquals(userList.get(i).getUserId(),userRepository.findAll().get(i).getUserId());
+            }
+        }else{
+            System.out.println("There is no user in database");
         }
+
     }
     @Test
     public void test_Delete() {
 
-        /*String uri = "/Delete/5d2ef6e89d51691644281cc4";
-        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.delete(uri)).andReturn();
-        int status = mvcResult.getResponse().getStatus();
-        assertEquals(200, status);
-        String content = mvcResult.getResponse().getContentAsString();
-        assertEquals(content, "Product is deleted successsfully");*/
-
         User user1=new User();
         user1.setUserId("5d317aa39d516912fc005f96");
-        List<User> userList =userRepository.findAll();
-        for(User user:userList){
-            if(user.getUserId().equals(user1.getUserId())){
-                System.out.println("UserId: "+ user.getUserId());
-                System.out.println("Deleted UserName: "+ user.getUserName());
-                System.out.println("Deleted Name: "+user.getName());
-                System.out.println("Deleted Surname: "+ user.getSurname());
-                user1=user;
-                break;
+        if(userRepository.findAll()!=null){
+            List<User> userList =userRepository.findAll();
+            for(User user:userList){
+                if(user.getUserId().equals(user1.getUserId())){
+                    System.out.println("UserId: "+ user.getUserId());
+                    System.out.println("Deleted UserName: "+ user.getUserName());
+                    System.out.println("Deleted Name: "+user.getName());
+                    System.out.println("Deleted Surname: "+ user.getSurname());
+                    user1=user;
+                    break;
+                }
             }
+            userRepository.deleteById(user1.getUserId());
+            assertNull(userRepository.findUserByUserName(user1.getUserId()));
+            System.out.println("Deleted Successfully UserId= "+ user1.getUserId());
+        }else{
+            System.out.println("There is no user in the database ");
         }
-        userRepository.deleteById(user1.getUserId());
-        assertNull(userRepository.findUserByUserName(user1.getUserId()));
-        System.out.println("Deleted Successfully UserId= "+ user1.getUserId());
     }
 
     @Test
     public void test_Edit(){
 
-        User user1= userRepository.findUserByUserName("Selami35");
-        String old_phone=user1.getPhoneNumber();
-        System.out.println("Before Edit PhoneNumber: "+ user1.getPhoneNumber());
-        user1.setPhoneNumber("5398225566");
+        if(userRepository.findUserByUserName("Selami35")!=null){
+            User user1= userRepository.findUserByUserName("Selami35");
+            String old_phone=user1.getPhoneNumber();
+            System.out.println("Before Edit PhoneNumber: "+ user1.getPhoneNumber());
+            user1.setPhoneNumber("5398225566");
 
-        userRepository.save(user1);
+            userRepository.save(user1);
 
-         user1= userRepository.findUserByUserName("Selami35");
-        assertThat(user1.getPhoneNumber()).doesNotMatch(old_phone);
-        System.out.println("After Edit PhoneNumber: " + user1.getPhoneNumber());
+            user1= userRepository.findUserByUserName("Selami35");
+            assertThat(user1.getPhoneNumber()).doesNotMatch(old_phone);
+            System.out.println("After Edit PhoneNumber: " + user1.getPhoneNumber());
+        }else {
+            System.out.println("This user is not in the database");
+        }
     }
 
     @Test
     public void isNotNullUser() {
-        User user1= userRepository.findUserByUserName("Selami35");
-        assertThat(user1.getName()).isNotNull();
+        if(userRepository.findUserByUserName("Selami35")!=null){
+            User user1= userRepository.findUserByUserName("Selami35");
+            assertThat(user1.getName()).isNotNull();
+        }else{
+            System.out.println("This user is not in the database");
+        }
+
     }
 }

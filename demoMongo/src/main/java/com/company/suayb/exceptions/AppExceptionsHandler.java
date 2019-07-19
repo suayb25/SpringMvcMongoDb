@@ -16,7 +16,9 @@ public class AppExceptionsHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleAnyException(Exception ex, WebRequest request){
         String errorMessageDescription=ex.getLocalizedMessage();
 
-        if(errorMessageDescription==null)errorMessageDescription=ex.toString();
+        if(errorMessageDescription==null){
+            errorMessageDescription=ex.toString();
+        }
 
         ErrorMessage errorMessage=new ErrorMessage(new Date(),errorMessageDescription);
         return new ResponseEntity<>(
